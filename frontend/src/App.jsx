@@ -33,7 +33,7 @@ const App = () => {
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=2103&auto=format&fit=crop&ixlib=rb-4.0.3')" }}
     >
       <div className="bg-white bg-opacity-80 p-6 rounded shadow-lg w-96">
-        <h1 className="text-2xl font-bold text-gray-700 mb-4">URL Shortener</h1>
+        <h1 className="text-2xl font-bold text-gray-700 mb-4">UReduce</h1>
         <div className="relative">
           <input
             type="text"
@@ -54,7 +54,7 @@ const App = () => {
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <button
           onClick={handleShorten}
-          className="mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+          className="mt-4 w-full bg-black text-white py-2 rounded hover:bg-red-500 transition"
         >
           Shorten
         </button>
