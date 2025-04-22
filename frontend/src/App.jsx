@@ -7,7 +7,6 @@ const App = () => {
   const [copied, setCopied] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "http://localhost:3000";  
 
   const isValidUrl = (url) => {
     try {
@@ -38,8 +37,7 @@ const App = () => {
       }
 
       const data = await res.json();
-      // Change the URL to use FRONTEND_URL instead of API_URL
-      const fullShortUrl = `${FRONTEND_URL}/${data.short_url}`;
+      const fullShortUrl = `${API_URL}/${data.short_url}`;
       setShortUrl(fullShortUrl);
     } catch (err) {
       setError("Oops! Something went wrong.");
