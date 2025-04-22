@@ -40,7 +40,7 @@ backend/*.out
 backend/.env
 
 # Database files
-database/*.sql
+#database/*.sql
 
 # Bun lock file
 frontend/bun.lockb
