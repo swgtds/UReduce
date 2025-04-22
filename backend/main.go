@@ -12,6 +12,7 @@ import (
 	"os"
 	"time"
 
+	//"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -25,6 +26,9 @@ type URL struct {
 var db *sql.DB
 
 func initDB() {
+	// Load environment variables from .env file (ignore error if not found)
+	//_ = godotenv.Load()
+
 	// Connect to the database using environment variables
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
@@ -112,12 +116,6 @@ func ShortURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Fetch the frontend URL from environment variables
-	frontendURL := os.Getenv("FRONTEND_URL")
-	if frontendURL == "" {
-		frontendURL = "http://localhost:8080"
-	}
-
 	var data struct {
 		URL string `json:"url"`
 	}
@@ -128,11 +126,9 @@ func ShortURLHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	shortURL := createURL(data.URL)
-	fullShortURL := fmt.Sprintf("%s/%s", frontendURL, shortURL)
-
 	response := struct {
 		ShortURL string `json:"short_url"`
-	}{ShortURL: fullShortURL}
+	}{ShortURL: shortURL}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
