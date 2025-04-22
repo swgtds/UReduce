@@ -13,6 +13,9 @@ RUN go mod download
 # Copy the source code into the container
 COPY . .
 
+# Copy .env file into the container
+COPY .env .env
+
 # Build the Go app
 RUN go build -o main .
 
