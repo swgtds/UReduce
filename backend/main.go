@@ -26,11 +26,8 @@ type URL struct {
 var db *sql.DB
 
 func initDB() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// Load environment variables from .env file (ignore error if not found)
+	_ = godotenv.Load()
 
 	// Connect to the database using environment variables
 	connStr := fmt.Sprintf(
@@ -42,6 +39,7 @@ func initDB() {
 		os.Getenv("DB_NAME"),
 	)
 
+	var err error
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Panic("Failed to connect to DB:", err)
@@ -102,11 +100,22 @@ func getURL(id string) (URL, error) {
 	return url, nil
 }
 
+func enableCORS(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+}
+
 func RootPageURL(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Api running successfully")
+	enableCORS(w)
+	fmt.Fprintf(w, "API running successfully")
 }
 
 func ShortURLHandler(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
+	if r.Method == "OPTIONS" {
+		return
+	}
+
 	var data struct {
 		URL string `json:"url"`
 	}
@@ -126,6 +135,7 @@ func ShortURLHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func redirectURLHandler(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
 	id := r.URL.Path[len("/"):]
 	url, err := getURL(id)
 	if err != nil {
@@ -136,18 +146,21 @@ func redirectURLHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Initialize the database connection
 	initDB()
 	defer db.Close()
 
-	// Handle incoming requests
 	http.HandleFunc("/home", RootPageURL)
 	http.HandleFunc("/shorten", ShortURLHandler)
 	http.HandleFunc("/", redirectURLHandler)
 
-	fmt.Println("Starting server on port 8080...")
-	err := http.ListenAndServe(":8080", nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf("Server starting on port %s...\n", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatal("Error on starting server:", err)
+		log.Fatal("Error starting server:", err)
 	}
 }
