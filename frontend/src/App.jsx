@@ -6,7 +6,8 @@ const App = () => {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Function to validate URL using the native URL constructor
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
   const isValidUrl = (url) => {
     try {
       new URL(url);
@@ -25,7 +26,7 @@ const App = () => {
 
     try {
       setError("");
-      const res = await fetch("http://localhost:8080/shorten", { 
+      const res = await fetch(`${API_URL}/shorten`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
@@ -36,7 +37,7 @@ const App = () => {
       }
 
       const data = await res.json();
-      const fullShortUrl = `http://localhost:8080/${data.short_url}`; 
+      const fullShortUrl = `${API_URL}/${data.short_url}`;
       setShortUrl(fullShortUrl);
     } catch (err) {
       setError("Oops! Something went wrong.");
@@ -64,7 +65,7 @@ const App = () => {
       className="relative flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat" 
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=2103&auto=format&fit=crop&ixlib=rb-4.0.3')", // Change the background image
+          "url('https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=2103&auto=format&fit=crop&ixlib=rb-4.0.3')",
       }}
     >
       <div className="bg-white bg-opacity-80 p-6 rounded shadow-lg w-96">
