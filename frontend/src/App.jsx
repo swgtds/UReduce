@@ -35,7 +35,7 @@ const App = () => {
       }
 
       const data = await res.json();
-      const fullShortUrl = `http://localhost:8080/redirect/${data.short_url}`; 
+      const fullShortUrl = `http://localhost:8080/${data.short_url}`; 
       setShortUrl(fullShortUrl);
     } catch (err) {
       setError("Oops! Something went wrong.");
