@@ -6,6 +6,7 @@ frontend/.next/
 frontend/out/
 frontend/public/static/
 frontend/.cache/
+frontend/.env
 
 # Environment files
 .env
