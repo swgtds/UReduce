@@ -6,7 +6,8 @@ const App = () => {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const isValidUrl = (url) => {
     try {
@@ -61,8 +62,8 @@ const App = () => {
   };
 
   return (
-    <div 
-      className="relative flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat" 
+    <div
+      className="relative flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage:
           "url('https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=2103&auto=format&fit=crop&ixlib=rb-4.0.3')",
@@ -105,23 +106,23 @@ const App = () => {
             >
               {shortUrl}
             </a>
-            <button 
-              onClick={handleCopy} 
+            <button
+              onClick={handleCopy}
               className="ml-2 bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600 transition flex items-center gap-1"
             >
               {copied ? "Copied!" : (
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                   className="w-5 h-5"
                 >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m-4-4h6m-6 0V5a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2h-6a2 2 0 01-2-2z" 
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m-4-4h6m-6 0V5a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2h-6a2 2 0 01-2-2z"
                   />
                 </svg>
               )}
