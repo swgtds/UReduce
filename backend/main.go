@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
@@ -12,8 +13,6 @@ import (
 	"os"
 	"time"
 
-
-	//"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -27,11 +26,6 @@ type URL struct {
 var db *sql.DB
 
 func initDB() {
-	// Load environment variables from .env file (ignore error if not found)
-
-	//_ = godotenv.Load()
-
-	// Connect to the database using environment variables
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -44,15 +38,29 @@ func initDB() {
 	var err error
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
-		log.Panic("Failed to connect to DB:", err)
+		log.Panicf("Failed to open DB connection: %v", err)
 	}
 
-	err = db.Ping()
+	// Retry logic
+	maxAttempts := 5
+	for attempts := 1; attempts <= maxAttempts; attempts++ {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		err = db.PingContext(ctx)
+		if err == nil {
+			break
+		}
+
+		log.Printf("DB not reachable (attempt %d/%d): %v", attempts, maxAttempts, err)
+		time.Sleep(3 * time.Second)
+	}
+
 	if err != nil {
-		log.Panic("DB not reachable:", err)
+		log.Panicf("DB not reachable after retries: %v", err)
 	}
 
-	fmt.Println("Connected to the database!")
+	log.Println("Connected to the database!")
 	createTable()
 }
 
@@ -66,7 +74,7 @@ func createTable() {
 	)`
 	_, err := db.Exec(query)
 	if err != nil {
-		log.Fatal("Error creating table:", err)
+		log.Panicf("Error creating table: %v", err)
 	}
 }
 
@@ -86,7 +94,7 @@ func createURL(originalURL string) string {
 		id, originalURL, shortURL, time.Now(),
 	)
 	if err != nil {
-		log.Println("Insert error:", err)
+		log.Printf("Insert error: %v", err)
 	}
 
 	return shortURL
@@ -109,7 +117,7 @@ func enableCORS(w http.ResponseWriter) {
 
 func RootPageURL(w http.ResponseWriter, r *http.Request) {
 	enableCORS(w)
-	fmt.Fprintf(w, "API running successfully")
+	fmt.Fprintln(w, "API running successfully")
 }
 
 func ShortURLHandler(w http.ResponseWriter, r *http.Request) {
@@ -160,9 +168,9 @@ func main() {
 		port = "8080"
 	}
 
-	fmt.Printf("Server starting on port %s...\n", port)
+	log.Printf("🚀 Server starting on port %s...\n", port)
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatal("Error starting server:", err)
+		log.Fatalf("Error starting server: %v", err)
 	}
 }
